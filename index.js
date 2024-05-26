@@ -5,12 +5,11 @@ const cheerio = require('cheerio')
 const PORT = 3000
 const app = express()
 
-
 app.get('/', (req,res) => {
     res.send("Hello world");
 })
 
-const url = "https://dictionary.law.com/Default.aspx?letter="
+const baseURL = "https://dictionary.law.com/Default.aspx?letter="
 const words = []
 
 const capitalLetters = [
@@ -19,17 +18,18 @@ const capitalLetters = [
 ];
 
 capitalLetters.forEach(letter => {
-    const wordURL = url + letter
-    axios.get(wordURL)
+    const letterURL = baseURL + letter
+    axios.get(letterURL)
     .then((result) => {
         const html = result.data
         const $ = cheerio.load(html)
         
-        $('.entry').each((index, element) => {
+        $('.entry').each((index, element) => { //div.entry 
 
-            const word = $(element).find('.word a').text().trim()
-            const definition = $(element).find('.definition').text()
-            words.push({
+            const word = $(element).find('.word a').text().trim() //find each anchor within a class called .word and get the text
+            const definition = $(element).find('.definition').text() //find all elements with .definition class and get the text
+
+            words.push({ //create a json object and push it onto words
                 word,
                 definition
             })
